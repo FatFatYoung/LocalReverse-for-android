@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalReverse</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 5px 0 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 10px; color: white; }
+        #btn { background: #007bff; }
+        #btn.stop { background: #dc3545; }
+        .row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .row button { flex: 1; margin-bottom: 0; padding: 12px; }
+        #btnSave { background: #fd7e14; }
+        #btnLoad { background: #17a2b8; }
+        #btnRefresh { background: #6c757d; }
+        #btnOpen { background: #28a745; }
+        #log { margin-top: 20px; padding: 10px; background: #333; color: #0f0; font-family: monospace; min-height: 100px; max-height: 200px; overflow-y: auto; border-radius: 5px; }
+        .ip-box { background: #e7f3ff; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-weight: bold; color: #0056b3; display: none; }
+        label { font-weight: bold; margin-top: 5px; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="text-align:center">LocalReverse 1.18.4</h2>
+        
+        <div class="ip-box" id="ipDisplay"></div>
+        
+        <label>Local Port</label>
+        <input id="lPort" value="9999">
+        
+        <label>Proxy URL</label>
+        <input id="proxyUrl" value="https://github.com/FatFatYoung">
+        
+        <div class="row">
+            <button id="btnSave" onclick="saveSettings()">Save</button>
+            <button id="btnLoad" onclick="loadSettings()">Load</button>
+        </div>
+        <div class="row">
+            <button id="btnRefresh" onclick="refreshIp()">Refresh IP</button>
+        </div>
 
+        <button id="btn" onclick="toggle()">Start</button>
+        <button id="btnOpen" class="open" style="display:none;" onclick="openBrowser()">Open in Browser</button>
+        
+        <div id="log">Waiting...</div>
+    </div>
+    <script>
+        let isRunning = false;
+        
+        window.onload = function() {
+            try {
+                let saved = AndroidProxy.getSavedSettings();
+                let data = JSON.parse(saved);
+                if(data.port) document.getElementById('lPort').value = data.port;
+                if(data.url) document.getElementById('proxyUrl').value = data.url;
+                addLog("Settings loaded.");
+            } catch(e) {}
+        };
+
+        function toggle() {
+            if (isRunning) {
+                AndroidProxy.stop();
+                document.getElementById('btn').textContent = "Start";
+                document.getElementById('btn').classList.remove('stop');
+                document.getElementById('btnOpen').style.display = 'none';
+                document.getElementById('ipDisplay').style.display = 'none';
+                isRunning = false;
+            } else {
+                let lp = parseInt(document.getElementById('lPort').value);
+                let url = document.getElementById('proxyUrl').value;
+                
+                AndroidProxy.start("0.0.0.0", lp, url);
+                document.getElementById('btn').textContent = "Stop";
+                document.getElementById('btn').classList.add('stop');
+                document.getElementById('btnOpen').style.display = 'block';
+                document.getElementById('ipDisplay').style.display = 'block';
+                isRunning = true;
+            }
+        }
+        
+        window.saveSettings = function() {
+            let p = document.getElementById('lPort').value;
+            let u = document.getElementById('proxyUrl').value;
+            AndroidProxy.saveSettings(p, u);
+        }
+
+        window.loadSettings = function() {
+            try {
+                let saved = AndroidProxy.getSavedSettings();
+                let data = JSON.parse(saved);
+                if(data.port) document.getElementById('lPort').value = data.port;
+                if(data.url) document.getElementById('proxyUrl').value = data.url;
+                addLog("Settings restored.");
+            } catch(e) {}
+        }
+
+        window.refreshIp = function() {
+            let ip = AndroidProxy.getIp();
+            if (ip) {
+                updateIp(ip);
+                addLog("IP refreshed: " + ip);
+            } else {
+                addLog("Failed to get IP");
+            }
+        }
+
+        window.updateIp = function(ip) {
+            document.getElementById('ipDisplay').textContent = "IP: " + ip;
+        }
+        window.openBrowser = function() {
+            AndroidProxy.openInBrowser();
+        }
+        window.addLog = function(msg) {
+            let d = document.getElementById('log');
+            d.innerHTML += new Date().toLocaleTimeString() + " " + msg + "<br>";
+            d.scrollTop = d.scrollHeight;
+        }
+    </script>
+</body>
+</html>
