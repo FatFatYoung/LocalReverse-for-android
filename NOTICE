@@ -1,0 +1,15 @@
+# NOTICES AND INFORMATION
+
+**1. Android SDK**
+
+This application is built using the Android Software Development Kit (SDK).
+Copyright (C) 2005-2026 The Android Open Source Project, licensed under the Apache License 2.0.
+
+**2. Project Icon**
+
+The project icon (`res/mipmap/icon.png`) is created/provided by the project author (FatFatYoung).
+
+**3. Third-Party Libraries**
+
+This project contains no third-party libraries or open-source components.
+All logic is implemented using standard Java and Android APIs.
