@@ -96,7 +96,6 @@ Copyright (c) 2026 FatFatYoung
 
 -   **Platform**: Android SDK (Android Open Source Project).
 -   **Icon**: Designed by FatFatYoung.
--   **No AI Attribution**: This project is manually crafted and reviewed.
 
 ---
-*Made with ❤️ and raw Java code.*
+GitHub: @FatFatYoung
